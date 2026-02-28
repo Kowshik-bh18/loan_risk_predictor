@@ -1,0 +1,7 @@
+age,income,credit_score,loan_amount,employment_status,loan_approved
+25,40000,650,10000,Employed,Yes
+45,80000,720,20000,Employed,Yes
+35,30000,580,15000,Unemployed,No
+50,90000,750,25000,Self-Employed,Yes
+28,35000,600,12000,Employed,No
+40,70000,710,18000,Employed,Yes

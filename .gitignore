@@ -1,0 +1,17 @@
+# Virtual environments
+env/
+venv/
+myenv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
