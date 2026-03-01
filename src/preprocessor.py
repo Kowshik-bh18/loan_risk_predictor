@@ -1,44 +1,48 @@
 # src/preprocessor.py
 
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
-
+from sklearn.preprocessing import StandardScaler
 class Preprocessor:
     def __init__(self, data: pd.DataFrame):
         self.data = data
-        self.X = None
-        self.y = None
+
+    def clean_data(self):
+        # Drop ID column
+        if "Loan_ID" in self.data.columns:
+            self.data = self.data.drop("Loan_ID", axis=1)
+
+        # Fill missing values
+        for column in self.data.columns:
+            if self.data[column].dtype == "object":
+                self.data[column] = self.data[column].fillna(self.data[column].mode()[0])
+            else:
+                self.data[column] = self.data[column].fillna(self.data[column].median())
 
     def encode_target(self):
-        """Convert Yes/No to 1/0"""
-        self.data['loan_approved'] = self.data['loan_approved'].map({
-            'Yes': 1,
-            'No': 0
+        self.data["Loan_Status"] = self.data["Loan_Status"].map({
+            "Y": 1,
+            "N": 0
         })
 
     def encode_categorical(self):
-        """One-hot encode employment_status"""
-        self.data = pd.get_dummies(self.data, columns=['employment_status'], drop_first=True)
+        categorical_cols = self.data.select_dtypes(include=["object"]).columns
+        self.data = pd.get_dummies(self.data, columns=categorical_cols, drop_first=True)
 
     def separate_features_target(self):
-        """Split features and target"""
-        self.X = self.data.drop('loan_approved', axis=1)
-        self.y = self.data['loan_approved']
-
-    def convert_to_numpy(self):
-        """Convert to NumPy arrays"""
-        self.X = np.array(self.X)
-        self.y = np.array(self.y)
-
-    def split_data(self, test_size=0.2, random_state=42):
-        """Train-test split"""
-        return train_test_split(self.X, self.y, test_size=test_size, random_state=random_state)
+        X = self.data.drop("Loan_Status", axis=1)
+        y = self.data["Loan_Status"]
+        return X, y
 
     def process(self):
-        """Complete preprocessing pipeline"""
+        self.clean_data()
         self.encode_target()
         self.encode_categorical()
-        self.separate_features_target()
-        self.convert_to_numpy()
-        return self.split_data()
+
+        X, y = self.separate_features_target()
+
+        # Scale features
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+
+        return train_test_split(X_scaled, y, test_size=0.2, random_state=42)
