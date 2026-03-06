@@ -14,11 +14,17 @@ def main():
     print(data["Loan_Status"].value_counts())
     # Preprocess data
     preprocessor = Preprocessor(data)
-    X_train, X_test, y_train, y_test = preprocessor.process()
+    X_train, X_test, y_train, y_test, feature_names = preprocessor.process()
 
     # Train models
     trainer = ModelTrainer()
-    results = trainer.train_and_evaluate(X_train, X_test, y_train, y_test)
+    results = trainer.train_and_evaluate(
+    X_train,
+    X_test,
+    y_train,
+    y_test,
+    feature_names
+)
 
 if __name__ == "__main__":
     main()
