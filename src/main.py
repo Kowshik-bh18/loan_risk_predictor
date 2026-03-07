@@ -25,6 +25,16 @@ def main():
     y_test,
     feature_names
 )
+    
+from predictor import Predictor
+
+predictor = Predictor()
+
+sample_input = [5000, 2000, 150, 360, 1, 0, 1, 0]
+
+result = predictor.predict(sample_input)
+
+print("\nPrediction:", result)
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,8 @@
 # src/model_trainer.py
 
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-import pandas as pd
+import joblib
+import os
 
 
 class ModelTrainer:
@@ -20,52 +21,49 @@ class ModelTrainer:
 
     def train_and_evaluate(self, X_train, X_test, y_train, y_test, feature_names):
 
+        best_model = None
+        best_f1 = 0
+        best_model_name = ""
+
         results = {}
 
         for name, model in self.models.items():
 
-            # Train model
             model.fit(X_train, y_train)
 
-            # Predictions
-            train_pred = model.predict(X_train)
-            test_pred = model.predict(X_test)
+            predictions = model.predict(X_test)
 
-            # Metrics
-            train_accuracy = accuracy_score(y_train, train_pred)
-            test_accuracy = accuracy_score(y_test, test_pred)
-            precision = precision_score(y_test, test_pred)
-            recall = recall_score(y_test, test_pred)
-            f1 = f1_score(y_test, test_pred)
+            accuracy = accuracy_score(y_test, predictions)
+            precision = precision_score(y_test, predictions)
+            recall = recall_score(y_test, predictions)
+            f1 = f1_score(y_test, predictions)
 
-            # Store results
             results[name] = {
-                "train_accuracy": train_accuracy,
-                "test_accuracy": test_accuracy,
+                "accuracy": accuracy,
                 "precision": precision,
                 "recall": recall,
                 "f1": f1
             }
 
-            # Print metrics
             print(f"\n{name}")
-            print("Train Accuracy:", train_accuracy)
-            print("Test Accuracy:", test_accuracy)
+            print("Accuracy:", accuracy)
             print("Precision:", precision)
             print("Recall:", recall)
             print("F1 Score:", f1)
 
-            # Feature importance for tree models
-            if hasattr(model, "feature_importances_"):
+            # Track best model
+            if f1 > best_f1:
+                best_f1 = f1
+                best_model = model
+                best_model_name = name
 
-                importance = model.feature_importances_
+        # Save best model
+        os.makedirs("model", exist_ok=True)
 
-                feature_importance = pd.DataFrame({
-                    "Feature": feature_names,
-                    "Importance": importance
-                }).sort_values(by="Importance", ascending=False)
+        joblib.dump(best_model, "model/best_model.pkl")
 
-                print("\nTop Important Features:")
-                print(feature_importance.head(5))
+        print("\nBest Model Selected:", best_model_name)
+        print("Best F1 Score:", best_f1)
+        print("Model saved to: model/best_model.pkl")
 
         return results
