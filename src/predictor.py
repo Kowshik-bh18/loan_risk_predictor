@@ -1,20 +1,16 @@
 import joblib
-import numpy as np
+import pandas as pd
 
 
 class Predictor:
 
-    def __init__(self, model_path="model/best_model.pkl"):
-        self.model = joblib.load(model_path)
+    def __init__(self, model_path="model/pipeline.pkl"):
+        self.pipeline = joblib.load(model_path)
 
-    def predict(self, input_data):
+    def predict(self, input_dict):
 
-        # Convert input to NumPy array
-        input_array = np.array(input_data).reshape(1, -1)
+        input_df = pd.DataFrame([input_dict])
 
-        prediction = self.model.predict(input_array)
+        prediction = self.pipeline.predict(input_df)
 
-        if prediction[0] == 1:
-            return "Loan Approved"
-        else:
-            return "Loan Rejected"
+        return "Loan Approved" if prediction[0] == 1 else "Loan Rejected"
