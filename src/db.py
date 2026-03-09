@@ -6,7 +6,7 @@ class MongoLogger:
 
     def __init__(self):
 
-        uri = "mongodb+srv://vk:1817@cluster0.azn0yvf.mongodb.net/?appName=Cluster0"
+        uri = "mongodb+srv://<username>:<password>@cluster0.azn0yvf.mongodb.net/?appName=Cluster0"
 
         self.client = MongoClient(uri)
 
