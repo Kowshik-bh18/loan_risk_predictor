@@ -11,6 +11,10 @@ class Predictor:
 
         input_df = pd.DataFrame([input_dict])
 
-        prediction = self.pipeline.predict(input_df)
+        prediction = self.pipeline.predict(input_df)[0]
 
-        return "Loan Approved" if prediction[0] == 1 else "Loan Rejected"
+        probability = self.pipeline.predict_proba(input_df)[0][1]
+
+        result = "Loan Approved" if prediction == 1 else "Loan Rejected"
+
+        return result, round(probability * 100, 2)
